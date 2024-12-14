@@ -1,35 +1,59 @@
-#include <ncurses.h>
-#include <unistd.h>
-#include "canvas.h"
+#include <pulse/simple.h>
+#include <pulse/error.h>
+#include <stdio.h>
+#include <math.h>
+
+#define BUFSIZE 1024
+
+pa_buffer_attr buffer_attr = {
+    .maxlength = (uint32_t)-1,           // Default maximum length
+    .tlength   = (uint32_t)-1,           // Default target length for playback
+    .prebuf    = (uint32_t)-1,           // Default pre-buffering for playback
+    .minreq    = (uint32_t)-1,           // Default minimum request
+    .fragsize  = (uint32_t)(1024),       // Smaller fragment size (smaller buffer)
+};
 
 int main() {
-    initscr();
-    noecho();
-    curs_set(FALSE);
-    timeout(0);
+    pa_simple *s = NULL;
+    int error;
 
-    Canvas *canvas = create_canvas();
+    // Create a new PulseAudio recording stream
+    static const pa_sample_spec ss = {
+        .format = PA_SAMPLE_S16LE,
+        .rate = 44100,
+        .channels = 1
+    };
 
-    while (1) {
-        int ch = getch();
-        if (ch == 'q') break;
-
-        // Update canvas size if terminal is resized
-        if (LINES != canvas->height || COLS != canvas->width) {
-            resize_canvas(canvas);
-        }
-
-        clear_canvas(canvas);
-
-        // Draw a square at the center, 25% of terminal size
-        draw_rect(canvas, 0.375, 0.375, 0.25, 0.25, '#');
-
-        render_canvas(canvas);
-        usleep(50000); // 50ms delay for smooth animation
+    if (!(s = pa_simple_new(NULL, "Visualizer", PA_STREAM_RECORD, NULL, "Audio Stream", &ss, NULL, &buffer_attr, &error))) {
+        fprintf(stderr, "pa_simple_new() failed: %s\n", pa_strerror(error));
+        return 1;
     }
 
-    destroy_canvas(canvas);
-    endwin();
+    uint8_t buf[BUFSIZE];
+    while (1) {
+        // Read audio data
+        if (pa_simple_read(s, buf, sizeof(buf), &error) < 0) {
+            fprintf(stderr, "pa_simple_read() failed: %s\n", pa_strerror(error));
+            break;
+        }
+
+        // Process audio (e.g., calculate RMS or FFT)
+        double rms = 0.0;
+        for (int i = 0; i < BUFSIZE; i += 2) {
+            int16_t sample = buf[i] | (buf[i+1] << 8);
+            rms += sample * sample;
+        }
+        rms = sqrt(rms / (BUFSIZE / 2));
+
+        // Print RMS value as a visual bar
+        int bars = (int)(rms / 1000);
+        printf("\r");
+        for (int i = 0; i < bars; ++i) printf("#");
+        fflush(stdout);
+    }
+
+    // Cleanup
+    if (s) pa_simple_free(s);
     return 0;
 }
 
