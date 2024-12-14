@@ -1,25 +1,30 @@
-# Compiler and flags
+# Variables
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -I./src
-LDFLAGS = -lncurses -lpulse-simple -lpulse -lm
-
-# Directories
-SRC_DIR = src
+CFLAGS = -Wall -Wextra -pedantic -I./src/include
+LDFLAGS = -lncurses -lpulse -lm
 BUILD_DIR = build
+SRC_DIR = src
 
-# Files
-SRCS = $(wildcard $(SRC_DIR)/*.c)
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
+# Source files and corresponding object files
+SOURCES = $(wildcard $(SRC_DIR)/*.c)
+OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
+
+# Target executable
 TARGET = $(BUILD_DIR)/render_engine
 
-# Targets
+# Default rule
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+# Linking step (note order: OBJECTS first, LDFLAGS last)
+$(TARGET): $(OBJECTS)
+	$(CC) $^ -o $@ $(LDFLAGS)
 
+# Compilation step for each source file
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(BUILD_DIR)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
+# Clean rule to remove build files
 clean:
 	rm -rf $(BUILD_DIR)/*.o $(TARGET)
+
