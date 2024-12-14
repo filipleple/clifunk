@@ -1,18 +1,27 @@
+# Compiler and Flags
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -lncurses
-OBJS = main.o canvas.o
+CFLAGS = -Wall -Wextra -pedantic -lncurses -I./src
 
-all: render_engine
+# Directories
+SRC_DIR = src
+BUILD_DIR = build
 
-render_engine: $(OBJS)
-	$(CC) -o render_engine $(OBJS) $(CFLAGS)
+# Files and Targets
+SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/canvas.c
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/canvas.o
+TARGET = $(BUILD_DIR)/render_engine
 
-main.o: main.c canvas.h
-	$(CC) -c main.c $(CFLAGS)
+# Build Rules
+all: $(TARGET)
 
-canvas.o: canvas.c canvas.h
-	$(CC) -c canvas.c $(CFLAGS)
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS)
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean:
-	rm -f $(OBJS) render_engine
+	rm -rf $(BUILD_DIR)
 
+.PHONY: all clean
