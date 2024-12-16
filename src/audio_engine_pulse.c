@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "kiss_fftr.h"
 
 #define SAMPLE_RATE 44100
 #define FRAGSIZE 512
@@ -79,12 +80,44 @@ float audio_engine_get_level() {
     return sqrtf(rms /  (BUFSIZE / 2));
 }
 
+static kiss_fftr_cfg fft_cfg = NULL;
+static kiss_fft_scalar input_buffer[FFT_SIZE];
+static kiss_fft_cpx output_buffer[FFT_SIZE / 2 + 1];
+
 // Get FFT data
 size_t audio_engine_get_fft(float *output_buffer, size_t buffer_size) {
-    if (!pulse_handle || buffer_size < FFT_SIZE) return 0;
+    if (!pulse_handle || buffer_size < FFT_SIZE / 2) {
+        fprintf(stderr, "Invalid FFT configuration or buffer size.\n");
+        return 0;
+    }
 
-    // Simulated FFT for simplicity (replace with real FFT library).
-    memcpy(output_buffer, fft_buffer, sizeof(float) * FFT_SIZE);
-    return FFT_SIZE;
+    // Allocate FFT configuration if not already done
+    if (!fft_cfg) {
+        fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, NULL, NULL);
+        if (!fft_cfg) {
+            fprintf(stderr, "Failed to allocate FFT configuration.\n");
+            return 0;
+        }
+    }
+
+    float input_buffer[FFT_SIZE];
+    kiss_fft_cpx freq_buffer[FFT_SIZE / 2 + 1];
+    int error;
+
+    // Read audio data into input_buffer
+    if (pa_simple_read(pulse_handle, input_buffer, sizeof(input_buffer), &error) < 0) {
+        fprintf(stderr, "PulseAudio read error: %s\n", pa_strerror(error));
+        return 0;
+    }
+
+    // Perform FFT
+    kiss_fftr(fft_cfg, input_buffer, freq_buffer);
+
+    // Compute magnitudes from the complex output
+    for (size_t i = 0; i < FFT_SIZE / 2; i++) {
+        output_buffer[i] = sqrtf(freq_buffer[i].r * freq_buffer[i].r +
+                                 freq_buffer[i].i * freq_buffer[i].i);
+    }
+
+    return FFT_SIZE / 2; // Return the size of the output buffer
 }
-

@@ -7,6 +7,7 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
+      "-I./src/lib",
       "-o",
       "build/audio_engine_pulse.o",
       "src/audio_engine_pulse.c"
@@ -23,6 +24,7 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
+      "-I./src/lib",
       "-o",
       "build/canvas.o",
       "src/canvas.c"
@@ -39,6 +41,7 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
+      "-I./src/lib",
       "-o",
       "build/main.o",
       "src/main.c"
@@ -55,12 +58,13 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
+      "-I./src/lib",
       "-o",
-      "build/visualization_bar.o",
-      "src/visualization_bar.c"
+      "build/visualization_rect.o",
+      "src/visualization_rect.c"
     ],
     "directory": "/home/flewinski/workspace/offtop/clifunk",
-    "file": "/home/flewinski/workspace/offtop/clifunk/src/visualization_bar.c",
-    "output": "/home/flewinski/workspace/offtop/clifunk/build/visualization_bar.o"
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/visualization_rect.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/visualization_rect.o"
   }
 ]
