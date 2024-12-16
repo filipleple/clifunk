@@ -13,62 +13,55 @@ void draw_rect_from_level(float level, Canvas* canvas){
     draw_rect(canvas, 0.375, 0.375, 0.25, h, '#');
 }
 
-#include <math.h>
-
 void draw_rects_from_fft(const float *fft_data, size_t fft_size, Canvas* canvas) {
     // Define frequency ranges
     float freq_per_bin = SAMPLE_RATE / (float)FFT_SIZE;
-    size_t bass_end = (size_t)(300 / freq_per_bin);
-    size_t mid_start = bass_end, mid_end = (size_t)(5000 / freq_per_bin);
-    size_t high_start = mid_end, high_end = (size_t)(16000 / freq_per_bin);
+    size_t ranges[7] = {
+        0,                                // Start of sub-bass
+        (size_t)(60 / freq_per_bin),      // End of sub-bass
+        (size_t)(300 / freq_per_bin),     // End of bass
+        (size_t)(1000 / freq_per_bin),    // End of lower midrange
+        (size_t)(5000 / freq_per_bin),    // End of upper midrange
+        (size_t)(10000 / freq_per_bin),   // End of presence
+        (size_t)(16000 / freq_per_bin)    // End of brilliance
+    };
 
     // Calculate log-scaled intensity for each range
-    float bass_intensity = 0.0f;
-    for (size_t i = 0; i < bass_end; i++) {
-        bass_intensity += log1p(fft_data[i]); // Logarithmic scale
+    float intensities[6] = {0.0f};
+    for (int band = 0; band < 6; band++) {
+        for (size_t i = ranges[band]; i < ranges[band + 1]; i++) {
+            intensities[band] += log1p(fft_data[i]); // Logarithmic scaling
+        }
+        intensities[band] /= (ranges[band + 1] - ranges[band]);
     }
-    bass_intensity /= (bass_end - 0);
-
-    float mid_intensity = 0.0f;
-    for (size_t i = mid_start; i < mid_end; i++) {
-        mid_intensity += log1p(fft_data[i]);
-    }
-    mid_intensity /= (mid_end - mid_start);
-
-    float high_intensity = 0.0f;
-    for (size_t i = high_start; i < high_end; i++) {
-        high_intensity += log1p(fft_data[i]);
-    }
-    high_intensity /= (high_end - high_start);
 
     // Apply weighting to balance the bands visually
-    const float bass_weight = 0.5f;  // Reduce bass impact
-    const float mid_weight = 1.0f;   // Leave mids as-is
-    const float high_weight = 2.0f;  // Boost highs
-    bass_intensity *= bass_weight;
-    mid_intensity *= mid_weight;
-    high_intensity *= high_weight;
-
-    // Find the maximum intensity across all bands
-    float max_intensity = fmaxf(fmaxf(bass_intensity, mid_intensity), high_intensity);
-
-    // Scale each band to the visualization range
-    float h_max = 0.5;  // Maximum bar height
-    float h_min = 0.02; // Minimum bar height
-    if (max_intensity > 0) {
-        bass_intensity = (bass_intensity / max_intensity) * (h_max - h_min) + h_min;
-        mid_intensity = (mid_intensity / max_intensity) * (h_max - h_min) + h_min;
-        high_intensity = (high_intensity / max_intensity) * (h_max - h_min) + h_min;
-    } else {
-        bass_intensity = h_min;
-        mid_intensity = h_min;
-        high_intensity = h_min;
+    const float weights[6] = {0.5f, 0.6f, 1.0f, 1.0f, 1.2f, 1.5f};
+    float max_intensity = 0.0f;
+    for (int band = 0; band < 6; band++) {
+        intensities[band] *= weights[band];
+        if (intensities[band] > max_intensity) {
+            max_intensity = intensities[band];
+        }
     }
 
-    // Draw rectangles for each frequency range
-    draw_rect(canvas, 0.25, 0.1, 0.125, bass_intensity, '#');  // Left: Bass
-    draw_rect(canvas, 0.4375, 0.1, 0.125, mid_intensity, '#'); // Center: Midrange
-    draw_rect(canvas, 0.625, 0.1, 0.125, high_intensity, '#'); // Right: High-End
+    // Normalize and scale intensities to fit within visualization range
+    float h_max = 0.3, h_min = 0.02;
+    for (int band = 0; band < 6; band++) {
+        if (max_intensity > 0) {
+            intensities[band] = (intensities[band] / max_intensity) * (h_max - h_min) + h_min;
+        } else {
+            intensities[band] = h_min;
+        }
+    }
+
+    // Draw rectangles for each band
+    float bar_width = 0.125; // Width of each bar
+    float gap = 0.02;        // Gap between bars
+    float x_start = 0.125;   // Initial x-coordinate
+    for (int band = 0; band < 6; band++) {
+        draw_rect(canvas, x_start + band * (bar_width + gap), 0.1, bar_width, intensities[band], '#');
+    }
 }
 
 void calculate_and_draw(float level, const float *fft_data, size_t fft_size, Canvas *canvas){
