@@ -14,7 +14,7 @@ pa_buffer_attr buffer_attr = {
     .tlength   = (uint32_t)-1,           // Default target length for playback
     .prebuf    = (uint32_t)-1,           // Default pre-buffering for playback
     .minreq    = (uint32_t)-1,           // Default minimum request
-    .fragsize  = (uint32_t)(FRAGSIZE),       // Smaller fragment size (smaller buffer)
+    .fragsize  = (uint32_t)(96),       // Smaller fragment size (smaller buffer)
 };
 
 static pa_simple *pulse_handle = NULL;
