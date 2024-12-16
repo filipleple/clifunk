@@ -20,6 +20,8 @@ pa_buffer_attr buffer_attr = {
 static pa_simple *pulse_handle = NULL;
 static float fft_buffer[FFT_SIZE];
 
+static void initialize_hann_window();
+
 // Initialize PulseAudio
 int audio_engine_init() {
     pa_sample_spec sample_spec = {
@@ -45,6 +47,9 @@ int audio_engine_init() {
         fprintf(stderr, "PulseAudio error: %s\n", pa_strerror(error));
         return -1;
     }
+
+    initialize_hann_window();
+
     return 0;
 }
 
@@ -78,6 +83,14 @@ float audio_engine_get_level() {
 static kiss_fftr_cfg fft_cfg = NULL;
 static kiss_fft_scalar input_buffer[FFT_SIZE];
 static kiss_fft_cpx output_buffer[FFT_SIZE / 2 + 1];
+static float hann_window[FFT_SIZE];
+
+// Function to initialize Hann window
+static void initialize_hann_window() {
+    for (size_t i = 0; i < FFT_SIZE; i++) {
+        hann_window[i] = 0.5 * (1 - cos(2 * M_PI * i / (FFT_SIZE - 1)));
+    }
+}
 
 // Get FFT data
 size_t audio_engine_get_fft(float *output_buffer, size_t buffer_size) {
@@ -95,6 +108,13 @@ size_t audio_engine_get_fft(float *output_buffer, size_t buffer_size) {
         }
     }
 
+    // Initialize Hann window if not already done
+    static int hann_initialized = 0;
+    if (!hann_initialized) {
+        initialize_hann_window();
+        hann_initialized = 1;
+    }
+
     float input_buffer[FFT_SIZE];
     kiss_fft_cpx freq_buffer[FFT_SIZE / 2 + 1];
     int error;
@@ -103,6 +123,11 @@ size_t audio_engine_get_fft(float *output_buffer, size_t buffer_size) {
     if (pa_simple_read(pulse_handle, input_buffer, sizeof(input_buffer), &error) < 0) {
         fprintf(stderr, "PulseAudio read error: %s\n", pa_strerror(error));
         return 0;
+    }
+
+    // Apply Hann window to the input buffer
+    for (size_t i = 0; i < FFT_SIZE; i++) {
+        input_buffer[i] *= hann_window[i];
     }
 
     // Perform FFT
