@@ -32,7 +32,19 @@ int audio_engine_init() {
         .channels = 1
     };
     int error;
-    pulse_handle = pa_simple_new(NULL, "Visualizer", PA_STREAM_RECORD, NULL, "Audio", &sample_spec, NULL, &buffer_attr, &error);
+
+    pulse_handle = pa_simple_new(
+        NULL,
+        "Visualizer",
+        PA_STREAM_RECORD,
+        "alsa_output.pci-0000_00_1f.3.analog-stereo.monitor",
+        "Audio",
+        &sample_spec,
+        NULL,
+        &buffer_attr,
+        &error
+    );
+
     if (!pulse_handle) {
         fprintf(stderr, "PulseAudio error: %s\n", pa_strerror(error));
         return -1;
