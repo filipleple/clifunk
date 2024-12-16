@@ -37,6 +37,9 @@ void calculate_logarithmic_ranges(size_t *ranges, size_t num_bands, float freq_p
 static float smoothed_intensities[NUM_BANDS] = {0};
 static float peak_values[NUM_BANDS] = {0};
 
+const float weights[6] = {0.3f, 0.25f, 0.3f, 1.5f, 1.2f, 1.5f};
+
+
 // Smooth and normalize FFT intensities
 void calculate_band_intensities(const float *fft_data, size_t fft_size, float *intensities) {
     float freq_per_bin = SAMPLE_RATE / (float)FFT_SIZE;
@@ -72,6 +75,8 @@ void calculate_band_intensities(const float *fft_data, size_t fft_size, float *i
         }
 
         intensities[band] = smoothed_intensities[band];
+        //intensities[band] *= weights[band];
+
     }
 }
 
