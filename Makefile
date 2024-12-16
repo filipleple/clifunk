@@ -1,7 +1,7 @@
 # Variables
 CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -I./src/include
-LDFLAGS = -lncurses -lpulse -lm
+LDFLAGS = -lncurses -lpulse -lpulse-simple -lm 
 BUILD_DIR = build
 SRC_DIR = src
 

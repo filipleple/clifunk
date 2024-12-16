@@ -11,13 +11,14 @@ typedef struct {
 } Canvas;
 
 Canvas *create_canvas();
+void canvas_init();
 void destroy_canvas(Canvas *canvas);
 void resize_canvas(Canvas *canvas);
 void clear_canvas(Canvas *canvas);
 void render_canvas(Canvas *canvas);
+void update_canvas_size(Canvas *canvas);
 
 // Drawing API
 void draw_rect(Canvas *canvas, float x, float y, float w, float h, char fill);
 
 #endif // CANVAS_H
-

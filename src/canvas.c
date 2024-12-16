@@ -8,6 +8,13 @@ Canvas *create_canvas() {
     return canvas;
 }
 
+void canvas_init(){
+    initscr();
+    noecho();
+    curs_set(FALSE);
+    timeout(0);
+}
+
 void destroy_canvas(Canvas *canvas) {
     for (int i = 0; i < canvas->height; i++) {
         free(canvas->buffer[i]);
@@ -39,6 +46,12 @@ void resize_canvas(Canvas *canvas) {
     for (int i = 0; i < new_height; i++) {
         canvas->buffer[i] = calloc(new_width, sizeof(char));
         canvas->prev_buffer[i] = calloc(new_width, sizeof(char));
+    }
+}
+
+void update_canvas_size(Canvas *canvas){
+    if (LINES != canvas->height || COLS != canvas->width) {
+        resize_canvas(canvas);
     }
 }
 
@@ -76,4 +89,3 @@ void draw_rect(Canvas *canvas, float x, float y, float w, float h, char fill) {
         }
     }
 }
-

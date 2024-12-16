@@ -1,0 +1,66 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-o",
+      "build/audio_engine_pulse.o",
+      "src/audio_engine_pulse.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/audio_engine_pulse.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/audio_engine_pulse.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-o",
+      "build/canvas.o",
+      "src/canvas.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/canvas.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/canvas.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-o",
+      "build/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/main.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-o",
+      "build/visualization_bar.o",
+      "src/visualization_bar.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/visualization_bar.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/visualization_bar.o"
+  }
+]

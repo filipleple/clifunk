@@ -1,4 +1,6 @@
 #include "audio_engine.h"
+#include "canvas.h"
+#include "visualization.h"
 #include <stdio.h>
 #include <unistd.h>
 
@@ -14,19 +16,31 @@ int main() {
         return 1;
     }
 
+    Canvas* canvas = create_canvas();
+    canvas_init();
+
+    float level = 0;
+
     // Visualizer loop
     while (1) {
-        float level = audio_engine_get_level();
-        printf("Audio Level: %f\n", level);
+        int ch = getch();
+        if (ch == 'q') break;
 
-        float fft_data[1024];
-        size_t fft_size = audio_engine_get_fft(fft_data, 1024);
+        // Update canvas size if terminal is resized
+        update_canvas_size(canvas);
+        clear_canvas(canvas);
 
-        // Visualization logic here...
+        // Get current sound level from audio engine
+        level = audio_engine_get_level();
 
-        usleep(sleep_duration_us); // Adjust as needed
+        // Calculate the visualization based on current level
+        calculate_and_draw(level, canvas);
+
+        render_canvas(canvas);
+        usleep(sleep_duration_us);
     }
 
+    destroy_canvas(canvas);
     audio_engine_cleanup();
     return 0;
 }
