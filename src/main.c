@@ -6,10 +6,12 @@
 
 #define SAMPLE_RATE 44100
 #define FRAGSIZE 512
+#define FFT_SIZE 1024
+#define BUFSIZE 1024
 
 int main() {
-    float sleep_duration_sec = (float)FRAGSIZE / SAMPLE_RATE; // Duration of one buffer
-    int sleep_duration_us = (int)(sleep_duration_sec * 1e6);  // Convert to microseconds
+    //float sleep_duration_sec = (float)FRAGSIZE / SAMPLE_RATE; // Duration of one buffer
+    //int sleep_duration_us = (int)(sleep_duration_sec * 1e6);  // Convert to microseconds
 
     if (audio_engine_init() != 0) {
         fprintf(stderr, "Failed to initialize audio engine.\n");
@@ -33,11 +35,14 @@ int main() {
         // Get current sound level from audio engine
         level = audio_engine_get_level();
 
-        // Calculate the visualization based on current level
-        calculate_and_draw(level, canvas);
+        static float fft_buffer[FFT_SIZE];
+        audio_engine_get_fft(fft_buffer, BUFSIZE);
+
+        // Calculate the visualization based on current level and FFT
+        calculate_and_draw(level, fft_buffer, BUFSIZE, canvas);
 
         render_canvas(canvas);
-        usleep(sleep_duration_us);
+        //usleep(sleep_duration_us);
     }
 
     destroy_canvas(canvas);

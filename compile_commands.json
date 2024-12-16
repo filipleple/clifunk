@@ -7,7 +7,7 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
-      "-I./src/lib",
+      "-I./src/lib/kissfft",
       "-o",
       "build/audio_engine_pulse.o",
       "src/audio_engine_pulse.c"
@@ -24,7 +24,7 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
-      "-I./src/lib",
+      "-I./src/lib/kissfft",
       "-o",
       "build/canvas.o",
       "src/canvas.c"
@@ -41,7 +41,7 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
-      "-I./src/lib",
+      "-I./src/lib/kissfft",
       "-o",
       "build/main.o",
       "src/main.c"
@@ -58,7 +58,7 @@
       "-Wextra",
       "-pedantic",
       "-I./src/include",
-      "-I./src/lib",
+      "-I./src/lib/kissfft",
       "-o",
       "build/visualization_rect.o",
       "src/visualization_rect.c"
@@ -66,5 +66,90 @@
     "directory": "/home/flewinski/workspace/offtop/clifunk",
     "file": "/home/flewinski/workspace/offtop/clifunk/src/visualization_rect.c",
     "output": "/home/flewinski/workspace/offtop/clifunk/build/visualization_rect.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-I./src/lib/kissfft",
+      "-o",
+      "build/lib/kissfft/kfc.o",
+      "src/lib/kissfft/kfc.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/lib/kissfft/kfc.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/lib/kissfft/kfc.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-I./src/lib/kissfft",
+      "-o",
+      "build/lib/kissfft/kiss_fft.o",
+      "src/lib/kissfft/kiss_fft.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/lib/kissfft/kiss_fft.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/lib/kissfft/kiss_fft.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-I./src/lib/kissfft",
+      "-o",
+      "build/lib/kissfft/kiss_fftnd.o",
+      "src/lib/kissfft/kiss_fftnd.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/lib/kissfft/kiss_fftnd.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/lib/kissfft/kiss_fftnd.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-I./src/lib/kissfft",
+      "-o",
+      "build/lib/kissfft/kiss_fftndr.o",
+      "src/lib/kissfft/kiss_fftndr.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/lib/kissfft/kiss_fftndr.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/lib/kissfft/kiss_fftndr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-pedantic",
+      "-I./src/include",
+      "-I./src/lib/kissfft",
+      "-o",
+      "build/lib/kissfft/kiss_fftr.o",
+      "src/lib/kissfft/kiss_fftr.c"
+    ],
+    "directory": "/home/flewinski/workspace/offtop/clifunk",
+    "file": "/home/flewinski/workspace/offtop/clifunk/src/lib/kissfft/kiss_fftr.c",
+    "output": "/home/flewinski/workspace/offtop/clifunk/build/lib/kissfft/kiss_fftr.o"
   }
 ]

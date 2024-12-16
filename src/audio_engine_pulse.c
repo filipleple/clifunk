@@ -9,7 +9,7 @@
 #include "kiss_fftr.h"
 
 #define SAMPLE_RATE 44100
-#define FRAGSIZE 512
+#define FRAGSIZE 256
 #define FFT_SIZE 1024
 
 #define BUFSIZE 1024
@@ -19,7 +19,7 @@ pa_buffer_attr buffer_attr = {
     .tlength   = (uint32_t)-1,           // Default target length for playback
     .prebuf    = (uint32_t)-1,           // Default pre-buffering for playback
     .minreq    = (uint32_t)-1,           // Default minimum request
-    .fragsize  = (uint32_t)(1024),       // Smaller fragment size (smaller buffer)
+    .fragsize  = (uint32_t)(FRAGSIZE),       // Smaller fragment size (smaller buffer)
 };
 
 static pa_simple *pulse_handle = NULL;

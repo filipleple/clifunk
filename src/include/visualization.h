@@ -3,6 +3,6 @@
 
 #include "canvas.h"
 
-void calculate_and_draw(float level, Canvas* canvas);
+void calculate_and_draw(float level, const float *fft_data, size_t fft_size, Canvas *canvas);
 
 #endif // VISUALIZATION_H
