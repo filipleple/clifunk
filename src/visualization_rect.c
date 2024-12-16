@@ -31,61 +31,69 @@ void calculate_logarithmic_ranges(size_t *ranges, size_t num_bands, float freq_p
 #define FALLOFF_RATE 0.05f   // How fast the bars fall off
 #define PEAK_FALLOFF_RATE 0.01f // How fast the peaks fall off
 
-// Arrays to track falloff and peaks
-static float previous_heights[6] = {0.0f};
-static float peak_heights[6] = {0.0f};
+#define PEAK_FALLOFF 0.1f // Controls peak cap fall-off speed
+#define SMOOTHING_FACTOR 0.05f
 
+static float smoothed_intensities[NUM_BANDS] = {0};
+static float peak_values[NUM_BANDS] = {0};
 
+// Smooth and normalize FFT intensities
 void calculate_band_intensities(const float *fft_data, size_t fft_size, float *intensities) {
-    // Define frequency ranges
     float freq_per_bin = SAMPLE_RATE / (float)FFT_SIZE;
+
+    // Define frequency ranges
     size_t ranges[NUM_BANDS + 1] = {
-        0,                                // Start of sub-bass
-        (size_t)(60 / freq_per_bin),      // End of sub-bass
-        (size_t)(300 / freq_per_bin),     // End of bass
-        (size_t)(1000 / freq_per_bin),    // End of lower midrange
-        (size_t)(5000 / freq_per_bin),    // End of upper midrange
-        (size_t)(10000 / freq_per_bin),   // End of presence
-        (size_t)(16000 / freq_per_bin)    // End of brilliance
+        0,                                // 20 Hz
+        (size_t)(60 / freq_per_bin),      // 60 Hz
+        (size_t)(250 / freq_per_bin),     // 250 Hz
+        (size_t)(500 / freq_per_bin),     // 500 Hz
+        (size_t)(2000 / freq_per_bin),    // 2000 Hz
+        (size_t)(6000 / freq_per_bin),    // 6000 Hz
+        (size_t)(16000 / freq_per_bin)    // 16000 Hz
     };
 
-    // Weights to balance the frequency bands visually
-    const float weights[NUM_BANDS] = {0.3f, 0.25f, 0.3f, 1.5f, 1.2f, 1.5f};
-
-    // Calculate intensities for each band
-    float max_intensity = 0.0f;
+    // Calculate band magnitudes
     for (int band = 0; band < NUM_BANDS; band++) {
-        intensities[band] = 0.0f;
+        float sum = 0.0f;
         for (size_t i = ranges[band]; i < ranges[band + 1]; i++) {
-            intensities[band] += log1p(fft_data[i]); // Logarithmic scaling
+            sum += log1p(fft_data[i]); // Logarithmic scaling
         }
-        intensities[band] /= (ranges[band + 1] - ranges[band]); // Average intensity
-        intensities[band] *= weights[band];                    // Apply band weight
+        float magnitude = sum / (ranges[band + 1] - ranges[band]);
 
-        if (intensities[band] > max_intensity) {
-            max_intensity = intensities[band];
+        // Smooth intensities using EMA
+        smoothed_intensities[band] =
+            SMOOTHING_FACTOR * magnitude + (1.0f - SMOOTHING_FACTOR) * smoothed_intensities[band];
+
+        // Update peaks
+        if (smoothed_intensities[band] > peak_values[band]) {
+            peak_values[band] = smoothed_intensities[band];
+        } else {
+            peak_values[band] -= PEAK_FALLOFF; // Gradual fall-off
         }
-    }
 
-    // Normalize to ensure consistent scaling
-    float normalization_factor = (max_intensity > 0) ? 1.0f / max_intensity : 1.0f;
-    for (int band = 0; band < NUM_BANDS; band++) {
-        intensities[band] *= normalization_factor;
+        intensities[band] = smoothed_intensities[band];
     }
 }
 
 void draw_bars_from_intensities(const float *intensities, Canvas *canvas) {
-    float h_max = 0.3f, h_min = 0.02f; // Visualization range for bar heights
+    float h_max = 0.3f, h_min = 0.02f; // Bar height range
     float bar_width = 0.125f;          // Width of each bar
     float gap = 0.02f;                 // Gap between bars
     float x_start = 0.125f;            // Initial x-coordinate
 
     for (int band = 0; band < NUM_BANDS; band++) {
-        // Scale the intensity to visualization range
+        // Scale bar height
         float bar_height = intensities[band] * (h_max - h_min) + h_min;
+
+        // Scale peak height
+        float peak_height = peak_values[band] * (h_max - h_min) + h_min;
 
         // Draw the bar
         draw_rect(canvas, x_start + band * (bar_width + gap), 0.1, bar_width, bar_height, '#');
+
+        // Draw the peak cap as a single character above the bar
+        float peak_y = 0.1 + peak_height;
+        draw_rect(canvas, x_start + band * (bar_width + gap), peak_y, bar_width, 0.01, '-');
     }
 }
 
