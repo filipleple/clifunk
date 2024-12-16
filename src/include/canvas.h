@@ -2,6 +2,7 @@
 #define CANVAS_H
 
 #include <ncurses.h>
+#include "config.h"
 
 typedef struct {
     int width;

@@ -7,12 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "kiss_fftr.h"
-
-#define SAMPLE_RATE 44100
-#define FRAGSIZE 256
-#define FFT_SIZE 1024
-
-#define BUFSIZE 1024
+#include "config.h"
 
 pa_buffer_attr buffer_attr = {
     .maxlength = (uint32_t)-1,           // Default maximum length

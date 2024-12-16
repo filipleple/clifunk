@@ -3,11 +3,8 @@
 #include "visualization.h"
 #include <stdio.h>
 #include <unistd.h>
+#include "config.h"
 
-#define SAMPLE_RATE 44100
-#define FRAGSIZE 512
-#define FFT_SIZE 1024
-#define BUFSIZE 1024
 
 int main() {
     //float sleep_duration_sec = (float)FRAGSIZE / SAMPLE_RATE; // Duration of one buffer
